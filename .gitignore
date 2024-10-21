@@ -1,0 +1,4 @@
+.vscode
+docker_compose/libs/machines/*
+python/libs/machines/*
+docker_compose/keycloak.jks

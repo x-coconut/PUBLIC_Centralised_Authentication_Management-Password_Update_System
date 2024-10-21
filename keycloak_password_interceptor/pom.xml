@@ -1,0 +1,149 @@
+<!-- Copyright 2024 @x-coconut
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.keycloak_password_interceptor</groupId>
+  <artifactId>keycloak_password_interceptor</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0</version>
+  <name>keycloak_password_interceptor</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+
+    <!-- UPDATE KEYCLOAK VERSION HERE -->
+    <Keycloak.version>25.0.2</Keycloak.version>
+
+    <!-- UPDATE APMQ-CLIENT VERSION HERE -->
+    <RabbitMQ.version>5.21.0</RabbitMQ.version>
+
+    <!-- UPDATE JSON VERSION HERE -->
+    <JSON.version>20240303</JSON.version>
+
+    <!-- UPDATE ECIESJAVA VERSION HERE -->
+    <ECIES.version>master-SNAPSHOT</ECIES.version>
+
+    <!-- UPDATE JAVA VERSION HERE -->
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+
+    <!-- UPDATE COMPILER PLUGIN VERSION HERE -->
+    <compilerPlugin.version>3.13.0</compilerPlugin.version>
+
+    <!-- UPDATE SHADE PLUGIN VERSION HERE -->
+    <shadePlugin.version>3.6.0</shadePlugin.version>
+
+  </properties>
+
+  <repositories>
+    <!-- JitPack repository to allow ECIES dependency -->
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+  
+  <dependencies>
+
+    <!-- search for dependencies: https://central.sonatype.com/artifact/org.keycloak/keycloak-core -->
+
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-services</artifactId>
+      <version>${Keycloak.version}</version>
+    </dependency> 
+
+    <!-- https://repo1.maven.org/maven2/com/rabbitmq/amqp-client/5.21.0/amqp-client-5.21.0.jar -->
+    <dependency>
+      <groupId>com.rabbitmq</groupId>
+      <artifactId>amqp-client</artifactId>
+      <version>${RabbitMQ.version}</version>
+    </dependency>
+
+    <!-- https://repo1.maven.org/maven2/org/json/json/20240303/json-20240303.jar -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${JSON.version}</version>
+    </dependency>
+
+    <!-- eciesjava dependency from GitHub via JitPack https://github.com/ecies/java/blob/master/README.md -->
+    <dependency>
+      <groupId>com.github.ecies</groupId>
+      <artifactId>java</artifactId>
+      <version>${ECIES.version}</version>
+    </dependency>
+
+  </dependencies>
+
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${compilerPlugin.version}</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+        </configuration>
+      </plugin>
+
+      <!-- needed to include dependencies in the .jar file -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${shadePlugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>META-INF/MANIFEST.MF</exclude>
+                    <exclude>META-INF/versions/9/module-info.class</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <artifactSet>
+                <includes>
+                  <include>com.rabbitmq:amqp-client</include>
+                  <include>org.json:json</include>
+                  <include>com.github.ecies:java</include>
+                  <include>org.bouncycastle:bcutil-jdk15on</include> <!-- used by eciesjava-->
+                  <include>org.bouncycastle:bcprov-jdk15on</include> <!-- used by eciesjava-->
+                  <include>org.bouncycastle:bcpkix-jdk15on</include> <!-- used by eciesjava-->
+                </includes>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

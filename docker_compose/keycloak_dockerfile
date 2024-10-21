@@ -1,0 +1,33 @@
+# Copyright 2024 @x-coconut
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+FROM quay.io/keycloak/keycloak:latest
+# use keycloak:25.0.2 if latest doesn't work
+
+# providers directory
+RUN mkdir -p /opt/keycloak/providers && ls -l /opt/keycloak
+
+# copy .jar file into container
+COPY keycloak_password_interceptor-1.0.jar /opt/keycloak/providers/
+
+# for https
+COPY keycloak.jks /opt/keycloak/conf/
+
+ENV KEYCLOAK_TLS_KEYSTORE=/opt/keycloak/conf/keycloak.jks
+ENV KEYCLOAK_TLS_KEYSTORE_PASSWORD=password
+
+# set the entrypoint to the default Keycloak startup command
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--https-key-store-file=/opt/keycloak/conf/keycloak.jks", "--db=postgres", "--db-url=jdbc:postgresql://172.2.0.3:5432/keycloakDB", "--db-username=user", "--db-password=password", "--db-schema=public", "--hostname-strict=false"]
+
