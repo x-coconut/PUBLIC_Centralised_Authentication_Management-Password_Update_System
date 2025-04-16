@@ -383,8 +383,8 @@ Update the IP address responsible for producing the public key for encryption to
     ```java
     try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
         HttpGet request = new HttpGet("http://192.168.43.128:5000"); // UPDATE THIS IP
+    }
     ```
-
 Recompile the code as specified in [Compiling the Code](#compiling-the-code).
 
 Update `docker_compose/keycloak_password_interceptor-1.0.jar` to this newly compiled file.
