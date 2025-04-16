@@ -380,10 +380,10 @@ The following change must be made in `keycloak_password_interceptor/src/main/jav
 
 Update the IP address responsible for producing the public key for encryption to the IP of the host machine (the machine running Docker Compose):
 
-    ```java
-    try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-        HttpGet request = new HttpGet("http://192.168.43.128:5000"); // UPDATE THIS IP
-    ```
+```java
+try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+    HttpGet request = new HttpGet("http://192.168.43.128:5000"); // UPDATE THIS IP
+```
 
 Recompile the code as specified in [Compiling the Code](#compiling-the-code).
 
